@@ -1,0 +1,61 @@
+#separate data
+aoc_d2_df <- aoc_day2 %>%
+             separate(strategy, c("opponent", "move"))
+
+# Part 1
+
+aoc_d2_outcome <-  aoc_d2_df %>%
+                   #get the outcome
+                   mutate(outcome = case_when((opponent == "A" & move == "X") ~ "Draw",
+                                              (opponent == "B" & move == "Y") ~ "Draw",
+                                              (opponent == "C" & move == "Z") ~ "Draw",
+                                              (opponent == "A" & move == "Y") ~ "Win",
+                                              (opponent == "A" & move == "Z") ~ "Loss",
+                                              (opponent == "B" & move == "X") ~ "Loss",
+                                              (opponent == "B" & move == "Z") ~ "Win",
+                                              (opponent == "C" & move == "X") ~ "Win",
+                                              (opponent == "C" & move == "Y") ~ "Loss")
+                          ) %>%
+                    #get the win score
+                    mutate(win_score = case_when(outcome == "Draw" ~ 3,
+                                                 outcome == "Loss" ~ 0,
+                                                 outcome == "Win" ~ 6)
+                           ) %>%
+                   #get the move score
+                    mutate(move_score = case_when(move == "X" ~ 1,
+                                                  move == "Y" ~ 2,
+                                                  move == "Z" ~ 3)
+                      
+                           ) %>%
+                    #get the total score for the round
+                    mutate(total_score = win_score + move_score)
+
+#get the total score overall 
+sum(aoc_d2_outcome$total_score)
+
+# Part Two
+aoc_d2_outcome_str2 <- aoc_d2_df %>%
+                       #get the outcome 
+                       mutate(outcome = case_when(move == "X" ~ "Loss",
+                                                  move == "Y" ~ "Draw",
+                                                  move == "Z" ~ "Win")) %>%
+                        #get the win score
+                        mutate(win_score = case_when(outcome == "Draw" ~ 3,
+                                                     outcome == "Loss" ~ 0,
+                                                     outcome == "Win" ~ 6)) %>%
+                        #get the move score
+                        mutate(move_score = case_when((opponent == "A" & move == "X") ~ 3,
+                                                   (opponent == "A" & move == "Y") ~ 1,
+                                                   (opponent == "A" & move == "Z") ~ 2,
+                                                   (opponent == "B" & move == "X") ~ 1,
+                                                   (opponent == "B" & move == "Y") ~ 2,
+                                                   (opponent == "B" & move == "Z") ~ 3,
+                                                   (opponent == "C" & move == "X") ~ 2,
+                                                   (opponent == "C" & move == "Y") ~ 3,
+                                                   (opponent == "C" & move == "Z") ~ 1)) %>%
+                        #get the total score for the round
+                        mutate(total_score = win_score + move_score)                       
+
+
+#get the total score overall 
+sum(aoc_d2_outcome_str2$total_score)
