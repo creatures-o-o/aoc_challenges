@@ -1,0 +1,59 @@
+# functions
+
+#function to find the common lettters between two strings
+match_letters <- function(x, y) paste(intersect(x, y), collapse = "")
+
+#function to find assign correct number to letter  
+letters_to_num <- function(string){
+  split_str <- unlist(strsplit(string,""))
+  return_str <- as.character(letter_number[letter_number$letters %in% split_str,]$value)
+  return(as.numeric(return_str))
+}
+
+
+#create mapping of letter to numbers
+lower_map<-data.frame(letters, value = as.character(1:26)) 
+upper_map <- data.frame(letters = LETTERS, value = as.character(27:52))
+letter_number <- rbind(lower_map, upper_map)
+
+# part 1 
+
+#process the data
+
+aoc_day3_df <- aoc_day3 %>%
+  #extract the items in the first compartment
+  mutate(compart_1 = substr(aoc_day3$rucksack, 1, (str_length(aoc_day3$rucksack)/2))) %>%
+  #extract the items in the second compartment
+  mutate(compart_2 = substr(aoc_day3$rucksack, (str_length(aoc_day3$rucksack)/2)+1, (str_length(aoc_day3$rucksack)))) %>%
+  #find common item types
+  mutate(matched = mapply(match_letters, strsplit(compart_1, ""), strsplit(compart_2, ""))) %>%
+  #return value of the item type
+  mutate(value = mapply(letters_to_num, matched))
+
+#get the result
+sum(aoc_day3_df$value)
+
+#part 2
+
+aoc_day3_groups <- aoc_day3_df %>%
+  #select relevant field
+  select(rucksack) %>%
+  #assign the group to the rows
+  mutate(grp_num = ceiling(row_number() / 3)) %>%
+  #group the data by group number
+  group_by(grp_num) %>% 
+  #assign the right sack number to that group
+  mutate(sack_num = paste0("sack", 1:n()))
+
+aoc_day3_analysis <- aoc_day3_groups %>%
+                     #pivot the table wider for ease of analysis
+                     pivot_wider(names_from = sack_num, values_from = rucksack) %>%
+                     #find the common letters in sack 1 and sack 2
+                     mutate(matched = mapply(match_letters, strsplit(sack1, ""), strsplit(sack2, ""))) %>%
+                     # find the common letters from sack 1 and sack 2 and sack 3
+                     mutate(common_item = mapply(match_letters, strsplit(sack3, ""), strsplit(matched, ""))) %>%
+                     #return value of the item type
+                     mutate(value = mapply(letters_to_num, common_item))
+  
+#get the result  
+sum(aoc_day3_analysis$value)
