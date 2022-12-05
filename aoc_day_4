@@ -6,16 +6,27 @@ library(stringr)
 aoc_day4 <- read.table('data/day4.txt',sep=',', col.names = c("pair1", "pair2")) 
 
 aoc_day4_df <- aoc_day4 %>%
+        #get the starting number of pair 1
         mutate(p1_start = as.numeric(str_extract(pair1, "[0-9]+"))) %>%
+        #get the end number for pair 1
         mutate(p1_end = as.numeric(str_extract(pair1, "[0-9]+$"))) %>%
+        #get the amount of numbers in the range for pair 1
         mutate(p1_width = p1_end - p1_start) %>%
+        #get the starting number of pair 2
         mutate(p2_start = as.numeric(str_extract(pair2, "[0-9]+"))) %>%
+        #get the ending number of pair 2
         mutate(p2_end = as.numeric(str_extract(pair2, "[0-9]+$"))) %>%
+        #get the amount of numbers in the range for pair 2
         mutate(p2_width = p2_end - p2_start) %>%
+        #do a check to see if they overlap at all
         mutate(overlap = (p1_end >= p2_start & p1_start <= p2_end )) %>%
+        #check to see how much they overlap
         mutate(num_overlap = pmin(p1_end, p2_end) - pmax(p1_start, p2_start)) %>%
+        #check to see if they fully overlap
         mutate(fully = num_overlap >= pmin(p1_width, p2_width))
-  
+
+#return fully overlapped entries
 fully <- filter(aoc_day4_df, fully == TRUE)
 
+#return the partial overlapped entries
 partial <- filter(aoc_day4_df, overlap == TRUE)
