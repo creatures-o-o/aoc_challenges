@@ -1,0 +1,77 @@
+library(tidyverse)
+
+#Part 1 Answer VCTFTJQCG
+#Part 2 Answer GCFGLDNJZ
+
+#get the data
+day5_data <- read_lines('data/day5.txt')
+#get the deliminiator
+deliminator <- which(input == "")
+
+#get the movesets and create a list 
+aoc_day5_moveset <- day5_data[seq(deliminator + 1, length(day5_data))] %>%
+  #only extract the file where there are numbers
+  str_extract_all("[0-9]+") %>%
+  #turn each line into a list
+  map(as.integer)
+  
+  
+
+#create the different stacks
+#read in the first 8 rows
+aoc_day5_stack <-as.matrix(read.fwf("data/day5.txt", nrows = 8, widths = rep(1,35))) %>%
+  #turn it to a dataframe
+  as.data.frame(.) %>%
+  #change blanks to na
+  mutate(across(where(is.character), ~ na_if(.," "))) %>%
+  #Select every 4th column from the 2nd column
+  select(num_range(prefix = "V", range = seq(2, last_col(), by = 4))) %>%
+  #change name to something move sensible
+  set_names(., paste0("V", 1:ncol(.))) %>%
+  #turn the matrix into a list
+  as.list(aoc_day5_stack) %>%
+  #reverse the order of the lists
+  map(rev) %>%
+  #get rid of the NA values
+  rapply(., na.omit, how = "replace")
+
+#part 1
+
+part1_stack <- aoc_day5_stack
+
+for (move in aoc_day5_moveset) {
+  #get all the from moves
+  from <- move[2]
+  #get all the to moves
+  to <- move[3]
+  #get all the amount of moves
+  amount <- move[1]
+  #add the values to the stack
+  part1_stack[[to]] <- c(part1_stack[[to]], rev(tail(part1_stack[[from]], amount))) #adds the items
+  #take the values from the stack
+  part1_stack[[from]] <- head(part1_stack[[from]], -amount) #removes the items
+}
+
+#get the last letters of the list in the stack and paste it
+map_chr(part1_stack, tail, 1)
+
+
+#Part 2
+
+part2_stack <- aoc_day5_stack
+
+for (move in aoc_day5_moveset) {
+  #get all the from moves
+  from <- move[2]
+  #get all the to moves
+  to <- move[3]
+  #get all the amount of moves
+  amount <- move[1]
+  #add the values to the stack
+  part2_stack[[to]] <- c(part2_stack[[to]], tail(part2_stack[[from]], amount)) #adds the items
+  #take the values from the stack
+  part2_stack[[from]] <- head(part2_stack[[from]], -amount) #removes the items
+}
+
+#get the characters at the end of the stack
+map_chr(part2_stack, tail, 1)
