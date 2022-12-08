@@ -1,0 +1,12 @@
+day6 <- readLines("data/day6.txt")
+day6_char_splt <- strsplit(day6, "")[[1]]
+
+target <- 14 # change to 14 for part 2
+adjst <- target - 1
+
+for (char in seq_len(length(day6_char_splt) - adjst)) {
+  if (length(unique(day6_char_splt[seq(char, char + adjst)])) == target) {
+    break
+  }
+}
+char + adjst
