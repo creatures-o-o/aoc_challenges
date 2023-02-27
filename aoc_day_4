@@ -1,10 +1,28 @@
 library(tidyr)
 library(dplyr)
 library(stringr)
+libary(purrr)
+
+#more efficient code
+
+data <- readLines("data/day4.txt") %>%
+  strsplit("[-,]") %>%
+  map(as.integer)
+
+contain <- function(x) {
+  seq1 <- seq(x[1], x[2])
+  seq2 <- seq(x[3], x[4])
+
+  length(setdiff(seq1, seq2)) == 0 ||
+  length(setdiff(seq2, seq1)) == 0
+}
+
+map_lgl(data, contain) %>% sum()
 
 #get the data
 aoc_day4 <- read.table('data/day4.txt',sep=',', col.names = c("pair1", "pair2")) 
 
+#ineffective code -------------------------------------
 aoc_day4_df <- aoc_day4 %>%
         #get the starting number of pair 1
         mutate(p1_start = as.numeric(str_extract(pair1, "[0-9]+"))) %>%
