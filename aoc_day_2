@@ -1,3 +1,30 @@
+#more efficient way 
+
+data <- readLines("data/day2.txt")
+
+moves <- c(A = "rock", B = "paper", C = "scissors",
+           X = "rock", Y = "paper", Z = "scissors")
+
+p1 <- moves[substr(data, 1, 1)]
+p2 <- moves[substr(data, 3, 3)]
+
+strat <- matrix(
+  c("tie", "lose", "win",
+    "win", "tie", "lose",
+    "lose", "win", "tie"),
+  byrow = TRUE, ncol = 3,
+  dimnames = list(c("rock", "paper", "scissors"),
+                  c("rock", "paper", "scissors"))
+)
+
+scores <- c(win = 6, tie = 3, lose = 0, rock = 1, paper = 2, scissors = 3)
+
+sum(scores[strat[cbind(p1, p2)]]) + sum(scores[p2])
+
+
+
+#ineffective code --------------------------------------------------
+
 #separate data
 aoc_d2_df <- aoc_day2 %>%
              separate(strategy, c("opponent", "move"))
