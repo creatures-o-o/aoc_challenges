@@ -6,18 +6,23 @@ libary(purrr)
 #more efficient code
 
 data <- readLines("data/day4.txt") %>%
+  #split string
   strsplit("[-,]") %>%
+  #turn data into integers
   map(as.integer)
 
 contain <- function(x) {
   seq1 <- seq(x[1], x[2])
   seq2 <- seq(x[3], x[4])
 
-  length(setdiff(seq1, seq2)) == 0 ||
+ #setdiff() to see if seq1 is within seq 2 or vice versa
+ length(setdiff(seq1, seq2)) == 0 ||
   length(setdiff(seq2, seq1)) == 0
-}
+} #end function
 
-map_lgl(data, contain) %>% sum()
+#returns an atomoic vector and sums it
+map_lgl(data, contain) %>% 
+sum()
 
 #get the data
 aoc_day4 <- read.table('data/day4.txt',sep=',', col.names = c("pair1", "pair2")) 
